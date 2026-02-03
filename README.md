@@ -148,7 +148,7 @@ If you're in the same boat - using AI to bridge the knowledge gap in Salesforce 
 
 **Connect:**
 - GitHub: [@jhillock](https://github.com/jhillock)
-- LinkedIn: [John Hillock](https://www.linkedin.com/in/YOUR_LINKEDIN) - Let's connect if you're building AI tools for Salesforce or navigating the "accidental admin" path
+- LinkedIn: [John Hillock](https://www.linkedin.com/in/jchillock) - Let's connect if you're building AI tools for Salesforce or navigating the "accidental admin" path
 
 ---
 
@@ -156,4 +156,4 @@ If you're in the same boat - using AI to bridge the knowledge gap in Salesforce 
 
 - **Bug reports:** [Open an issue](https://github.com/jhillock/salesforce-claude-skills/issues)
 - **Usage questions:** [GitHub Discussions](https://github.com/jhillock/salesforce-claude-skills/discussions)
-- **Just want to connect:** Find me on [LinkedIn](https://www.linkedin.com/in/YOUR_LINKEDIN)
+- **Just want to connect:** Find me on [LinkedIn](https://www.linkedin.com/in/jchillock)
