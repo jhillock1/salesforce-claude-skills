@@ -176,6 +176,12 @@ Map<Id, Account> accounts = new Map<Id, Account>(
 
 By contributing, you agree your contributions will be licensed under the MIT License.
 
-## Questions?
+---
 
-Open an issue or reach out: [your contact method]
+## Questions or Issues?
+
+- **Bug reports:** [Open an issue](https://github.com/jhillock/salesforce-claude-skills/issues)
+- **Usage questions or discussions:** [GitHub Discussions](https://github.com/jhillock/salesforce-claude-skills/discussions)
+- **Connect with others building AI tools for Salesforce:** [LinkedIn - John Hillock](https://www.linkedin.com/in/YOUR_LINKEDIN)
+
+**Community contributions welcome!** These skills exist because people like you needed better tools.

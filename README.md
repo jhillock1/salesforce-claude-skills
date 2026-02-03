@@ -1,14 +1,19 @@
 # Salesforce Claude Skills
 
-**Claude Code skills for Salesforce development** - patterns, best practices, and validation tools for building on the Salesforce platform.
+**For everyone who got thrown into Salesforce admin/dev work and turned to AI for help.**
+
+Claude Code is powerful. The Salesforce MCP gives it tools. But without guardrails, Claude makes expensive mistakes: global quick actions that won't deploy, SOQL queries without security enforcement, full-org deploys that fail on pre-existing errors.
+
+These skills teach Claude the patterns you learned the hard way.
 
 ## What This Is
 
 A **hybrid approach** combining:
-- **Skills** (markdown docs) that teach Claude Code common Salesforce patterns
+- **Skills** (markdown docs) that teach Claude Code Salesforce patterns
 - **Validation scripts** (bash/shell) that catch mistakes before deployment
+- **Auto-configuration** that discovers your org setup and customizes everything
 
-Built from 170+ real Claude Code sessions and countless "why did that fail?!" moments.
+Built from 170+ real Claude Code sessions in a production org. Not by a consultant. By someone who needed it to work.
 
 ## What's Included
 
@@ -135,4 +140,20 @@ MIT License - see [LICENSE](LICENSE)
 
 ## Author
 
-Built by [jhillock](https://github.com/jhillock) after 170+ Claude Code sessions and way too many "why is this quick action global?!" moments.
+**Built by someone who got thrown into a Salesforce admin role and had to figure it out.**
+
+After 170+ Claude Code sessions (and way too many "why did that deploy fail?!" moments), these patterns emerged. Not a certified admin. Not a Salesforce consultant. Just someone who needed guardrails and built them.
+
+If you're in the same boat - using AI to bridge the knowledge gap in Salesforce - these skills are for you.
+
+**Connect:**
+- GitHub: [@jhillock](https://github.com/jhillock)
+- LinkedIn: [John Hillock](https://www.linkedin.com/in/YOUR_LINKEDIN) - Let's connect if you're building AI tools for Salesforce or navigating the "accidental admin" path
+
+---
+
+## Questions or Issues?
+
+- **Bug reports:** [Open an issue](https://github.com/jhillock/salesforce-claude-skills/issues)
+- **Usage questions:** [GitHub Discussions](https://github.com/jhillock/salesforce-claude-skills/discussions)
+- **Just want to connect:** Find me on [LinkedIn](https://www.linkedin.com/in/YOUR_LINKEDIN)
