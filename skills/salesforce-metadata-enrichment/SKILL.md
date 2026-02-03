@@ -53,16 +53,16 @@ ls force-app/main/default/objects/
 
 ```bash
 # Core object and fields
-sf project retrieve start --target-org production --metadata "CustomObject:[ObjectName]__c"
+sf project retrieve start --target-org <your-prod-alias> --metadata "CustomObject:[ObjectName]__c"
 
 # Page layouts
-sf project retrieve start --target-org production --metadata "Layout:[ObjectName]__c-*"
+sf project retrieve start --target-org <your-prod-alias> --metadata "Layout:[ObjectName]__c-*"
 
 # Lightning pages
-sf project retrieve start --target-org production --metadata "FlexiPage:[ObjectName]_Record_Page"
+sf project retrieve start --target-org <your-prod-alias> --metadata "FlexiPage:[ObjectName]_Record_Page"
 
 # Find related flows
-sf project retrieve start --target-org production --metadata "Flow"
+sf project retrieve start --target-org <your-prod-alias> --metadata "Flow"
 ```
 
 ### Step 3: Analyze Current State
@@ -164,7 +164,7 @@ git diff force-app/main/default/flexipages/
 Only after user explicitly approves. Use targeted deploys (see `salesforce-deploy` skill):
 
 ```bash
-sf project deploy start --target-org production \
+sf project deploy start --target-org <your-prod-alias> \
   --source-dir force-app/main/default/objects/[ObjectName]__c
 ```
 

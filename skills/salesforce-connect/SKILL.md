@@ -33,14 +33,19 @@ Diagnose and fix Salesforce MCP server connection issues at session start.
 sf org list
 ```
 
+**🔧 CUSTOMIZE:** Use your own org aliases
+
 **Expected output:**
-- `sandbox` org with status "Connected" (used by MCP server)
-- `production` org with status "Connected" (for read-only reference)
+- Your sandbox org with status "Connected" (used by MCP server)
+- Your production org with status "Connected" (for read-only reference, optional)
 
 **If auth is missing**, re-authenticate:
 ```bash
-sf org login web --alias sandbox --instance-url https://test.salesforce.com
-sf org login web --alias production --instance-url https://login.salesforce.com
+# Sandbox
+sf org login web --alias YOUR_SANDBOX_ALIAS --instance-url https://test.salesforce.com
+
+# Production (optional, for read-only queries)
+sf org login web --alias YOUR_PROD_ALIAS --instance-url https://login.salesforce.com
 ```
 
 ### Step 3: Verify .mcp.json Configuration
@@ -49,7 +54,9 @@ sf org login web --alias production --instance-url https://login.salesforce.com
 cat .mcp.json
 ```
 
-**Required configuration:**
+**🔧 CUSTOMIZE:** Replace `YOUR_SANDBOX_ALIAS` with your org alias (from `sf org list`)
+
+**Example configuration:**
 ```json
 {
   "mcpServers": {
@@ -58,7 +65,7 @@ cat .mcp.json
       "args": [
         "-y",
         "@salesforce/mcp",
-        "--orgs", "sandbox",
+        "--orgs", "YOUR_SANDBOX_ALIAS",
         "--toolsets", "orgs,metadata,data,apex,lwc-experts",
         "--allow-non-ga-tools"
       ]
@@ -67,11 +74,18 @@ cat .mcp.json
 }
 ```
 
+**Toolsets you can enable:**
+- `orgs` - Org management and info
+- `metadata` - Retrieve/deploy metadata  
+- `data` - SOQL queries and DML
+- `apex` - Execute anonymous Apex
+- `lwc-experts` - LWC development assistance
+
 ### Step 4: Manual MCP Server Test
 
 Test if the MCP server can start manually:
 ```bash
-npx -y @salesforce/mcp --orgs sandbox --toolsets orgs --help
+npx -y @salesforce/mcp --orgs YOUR_SANDBOX_ALIAS --toolsets orgs --help
 ```
 
 If this fails, there may be a package or auth issue.
@@ -90,7 +104,7 @@ If this fails, there may be a package or auth issue.
 | No Salesforce tools visible | Enable in settings + restart |
 | `sf org list` shows no orgs | Run `sf org login web` |
 | MCP server fails to start | Check `npx` and node versions |
-| Wrong org targeted | Verify `--orgs sandbox` in .mcp.json |
+| Wrong org targeted | Verify `--orgs YOUR_ALIAS` in .mcp.json |
 
 ## Available Toolsets (When Connected)
 
@@ -104,6 +118,9 @@ If this fails, there may be a package or auth issue.
 
 ## Safety Reminder
 
-- **Sandbox** is the default target for all writes/deploys
-- **Production** queries are read-only via SOQL
+**🔧 CUSTOMIZE:** Adjust this based on your deployment strategy
+
+- **Sandbox** should be the default target for all writes/deploys
+- **Production** queries should be read-only via SOQL
 - Never deploy to production without explicit user confirmation
+- Consider using separate MCP configs per project if working with multiple orgs

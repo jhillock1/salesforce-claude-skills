@@ -96,7 +96,7 @@ List view columns use a special naming convention that differs from field API na
 
 Find queue developer names:
 ```bash
-sf data query --query "SELECT Id, Name, DeveloperName FROM Group WHERE Type = 'Queue'" --target-org sandbox
+sf data query --query "SELECT Id, Name, DeveloperName FROM Group WHERE Type = 'Queue'" --target-org <your-sandbox-alias>
 ```
 
 ## Recipes
@@ -105,13 +105,13 @@ sf data query --query "SELECT Id, Name, DeveloperName FROM Group WHERE Type = 'Q
 1. Write the XML file to `force-app/main/default/objects/<Object>/listViews/<Name>.listView-meta.xml`
 2. Deploy:
    ```bash
-   sf project deploy start --source-dir force-app/main/default/objects/Case/listViews/Needs_Attention.listView-meta.xml --target-org sandbox
+   sf project deploy start --source-dir force-app/main/default/objects/Case/listViews/Needs_Attention.listView-meta.xml --target-org <your-sandbox-alias>
    ```
 
 ### Add a Column to Existing List View
 1. Retrieve it:
    ```bash
-   sf project retrieve start --metadata "ListView:Case.Needs_Attention" --target-org sandbox
+   sf project retrieve start --metadata "ListView:Case.Needs_Attention" --target-org <your-sandbox-alias>
    ```
 2. Add a `<columns>` element (order = display order)
 3. Redeploy
@@ -119,7 +119,7 @@ sf data query --query "SELECT Id, Name, DeveloperName FROM Group WHERE Type = 'Q
 ### Validate List View Shows Correct Data
 ```bash
 # Replicate the filter logic in SOQL
-sf data query --query "SELECT CaseNumber, Subject, Status, Owner.Name FROM Case WHERE Needs_Attention__c = true AND OwnerId = '<userId>' ORDER BY CreatedDate DESC" --target-org sandbox
+sf data query --query "SELECT CaseNumber, Subject, Status, Owner.Name FROM Case WHERE Needs_Attention__c = true AND OwnerId = '<userId>' ORDER BY CreatedDate DESC" --target-org <your-sandbox-alias>
 ```
 
 Compare the SOQL results with what appears in the list view UI.

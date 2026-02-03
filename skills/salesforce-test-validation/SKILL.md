@@ -27,7 +27,7 @@ Salesforce will happily deploy metadata that doesn't actually work at runtime. Y
 Create test records quickly using `sf apex run`:
 
 ```bash
-sf apex run --file /tmp/create-test-data.apex --target-org sandbox
+sf apex run --file /tmp/create-test-data.apex --target-org <your-sandbox-alias>
 ```
 
 Example test data script:
@@ -94,7 +94,7 @@ After deploying a feature, create a validation checklist. For each scenario:
 ### Validate List Views
 ```bash
 # Query what a list view SHOULD show
-sf data query --query "SELECT CaseNumber, Subject, Status, Waiting_On__c, Owner.Name FROM Case WHERE Needs_Attention__c = true AND OwnerId = '005...' ORDER BY CreatedDate DESC LIMIT 20" --target-org sandbox
+sf data query --query "SELECT CaseNumber, Subject, Status, Waiting_On__c, Owner.Name FROM Case WHERE Needs_Attention__c = true AND OwnerId = '005...' ORDER BY CreatedDate DESC LIMIT 20" --target-org <your-sandbox-alias>
 ```
 
 Compare query results against what appears in the UI list view.
@@ -104,7 +104,7 @@ Compare query results against what appears in the UI list view.
 2. **Update the record** to match trigger criteria
 3. **Re-query the record** to verify the flow's changes took effect:
 ```bash
-sf data query --query "SELECT Id, Status, Waiting_On__c FROM Case WHERE CaseNumber = '00048522'" --target-org sandbox
+sf data query --query "SELECT Id, Status, Waiting_On__c FROM Case WHERE CaseNumber = '00048522'" --target-org <your-sandbox-alias>
 ```
 
 ### Validate Quick Actions Exist on Page
@@ -116,22 +116,22 @@ sf data query --query "SELECT Id, Status, Waiting_On__c FROM Case WHERE CaseNumb
 ### Run Apex Tests
 ```bash
 # Run specific test class
-sf apex run test --class-names CaseLifecycleFlowTest --target-org sandbox --result-format human
+sf apex run test --class-names CaseLifecycleFlowTest --target-org <your-sandbox-alias> --result-format human
 
 # Run all tests (slower)
-sf apex run test --target-org sandbox --result-format human
+sf apex run test --target-org <your-sandbox-alias> --result-format human
 
 # Check code coverage
-sf apex run test --class-names CaseLifecycleFlowTest --code-coverage --target-org sandbox
+sf apex run test --class-names CaseLifecycleFlowTest --code-coverage --target-org <your-sandbox-alias>
 ```
 
 ### Validate Queue Assignments
 ```bash
 # Find queue IDs
-sf data query --query "SELECT Id, Name, DeveloperName FROM Group WHERE Type = 'Queue'" --target-org sandbox
+sf data query --query "SELECT Id, Name, DeveloperName FROM Group WHERE Type = 'Queue'" --target-org <your-sandbox-alias>
 
 # Check cases owned by a queue
-sf data query --query "SELECT CaseNumber, Subject, Owner.Name FROM Case WHERE Owner.Type = 'Queue' AND Status != 'Closed' ORDER BY CreatedDate DESC LIMIT 10" --target-org sandbox
+sf data query --query "SELECT CaseNumber, Subject, Owner.Name FROM Case WHERE Owner.Type = 'Queue' AND Status != 'Closed' ORDER BY CreatedDate DESC LIMIT 10" --target-org <your-sandbox-alias>
 ```
 
 ### Cross-Queue Escalation Test

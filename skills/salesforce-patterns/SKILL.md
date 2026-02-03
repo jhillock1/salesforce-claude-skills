@@ -186,27 +186,62 @@ Use this during brainstorming/planning:
 
 ## Org-Specific Context
 
+**🔧 CUSTOMIZE THIS SECTION FOR YOUR ORG**
+
 ### RecordTypes in Use
+```markdown
+<!-- Example:
 - **Case:** Service_Cloud_Case, Sales_Cloud_Case
-- **Opportunity:** Standard (no custom RecordTypes currently)
+- **Opportunity:** New_Business, Renewal, Upsell
 - **Account:** Standard
+-->
+
+- **Object:** RecordType_Developer_Names_Here
+```
 
 ### Custom Objects
-- Check LEARNINGS.md for discovered custom objects
+```markdown
+<!-- List your custom objects and their purpose:
+- CustomObject__c - Description of what it tracks
+- AnotherCustom__c - Its business purpose
+-->
+
+- Your custom objects here
 - Reference metadata files in force-app/main/default/objects/
+```
 
 ### Integration Points
+```markdown
+<!-- Document external systems:
+- ExternalSystem → Salesforce (via API/webhook)
+- Salesforce → ExternalSystem (via Platform Events/Apex callouts)
+-->
+
 - Document your org's integrations here
 - Third-party apps connected to Salesforce
 - API consumers and webhooks
+```
 
-## References
+## Project References
+
+**🔧 CUSTOMIZE THESE PATHS** (or remove if not using project docs)
+
+```markdown
+<!-- Recommended project structure for Claude Code:
+.claude/
+  GOALS.md          - Project goals and success criteria
+  LEARNINGS.md      - Discoveries about the org (custom objects, integrations)
+  DECISIONS.md      - Architectural decisions and why
+  instructions.md   - Session-level instructions
+SAFETY-RULES.md     - Deployment safety rules
+-->
 
 - Project goals: `.claude/GOALS.md`
 - Org learnings: `.claude/LEARNINGS.md`
 - Architectural decisions: `.claude/DECISIONS.md`
 - Safety rules: `SAFETY-RULES.md`
 - Instructions: `.claude/instructions.md`
+```
 
 ## Remember
 

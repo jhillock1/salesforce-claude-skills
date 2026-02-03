@@ -19,10 +19,10 @@ Most flexipages are NOT in your local repo. You must **retrieve first**:
 
 ```bash
 # Find the flexipage name for an object
-sf project retrieve start --metadata FlexiPage --target-org sandbox
+sf project retrieve start --metadata FlexiPage --target-org <your-sandbox-alias>
 
 # Or retrieve a specific one
-sf project retrieve start --metadata "FlexiPage:Case_Record_Page" --target-org sandbox
+sf project retrieve start --metadata "FlexiPage:Case_Record_Page" --target-org <your-sandbox-alias>
 ```
 
 The file lands in: `force-app/main/default/flexipages/<Name>.flexipage-meta.xml`
@@ -76,7 +76,7 @@ Inside that component, find the `<componentInstanceProperties>` with `<name>acti
 
 **Step 4:** Deploy the flexipage:
 ```bash
-sf project deploy start --source-dir force-app/main/default/flexipages/Case_Record_Page.flexipage-meta.xml --target-org sandbox
+sf project deploy start --source-dir force-app/main/default/flexipages/Case_Record_Page.flexipage-meta.xml --target-org <your-sandbox-alias>
 ```
 
 ### Add a Component to a Tab

@@ -70,7 +70,7 @@ This is the #1 mistake. **Object-scoped actions** are required for flexipages.
 
 **Step 2:** Deploy the flow:
 ```bash
-sf project deploy start --source-dir force-app/main/default/flows/My_Flow.flow-meta.xml --target-org sandbox
+sf project deploy start --source-dir force-app/main/default/flows/My_Flow.flow-meta.xml --target-org <your-sandbox-alias>
 ```
 
 **Step 3:** Create the QuickAction XML at:
@@ -80,7 +80,7 @@ Use the Flow-Based template above.
 
 **Step 4:** Deploy the quick action:
 ```bash
-sf project deploy start --source-dir force-app/main/default/objects/Case/quickActions/My_Action.quickAction-meta.xml --target-org sandbox
+sf project deploy start --source-dir force-app/main/default/objects/Case/quickActions/My_Action.quickAction-meta.xml --target-org <your-sandbox-alias>
 ```
 
 **Step 5:** Wire it to the flexipage (see `salesforce-lightning-pages` skill)
@@ -93,7 +93,7 @@ sf project deploy start --source-dir force-app/main/default/objects/Case/quickAc
 1. Does the QuickAction XML have `<targetObject>Case</targetObject>`?
    - If NO: Add it, redeploy the action, then retry flexipage
 2. Is the action deployed to the org?
-   - Check: `sf project retrieve start --metadata "QuickAction:Case.MyAction" --target-org sandbox`
+   - Check: `sf project retrieve start --metadata "QuickAction:Case.MyAction" --target-org <your-sandbox-alias>`
 3. Is it registered as global instead of object-scoped?
    - If YES: Delete the global version first, then redeploy as object-scoped
 
@@ -119,10 +119,10 @@ cat > /tmp/destructive/package.xml << 'EOF'
 EOF
 
 # Delete global version
-sf project deploy start --manifest /tmp/destructive/package.xml --post-destructive-changes /tmp/destructive/destructiveChanges.xml --target-org sandbox
+sf project deploy start --manifest /tmp/destructive/package.xml --post-destructive-changes /tmp/destructive/destructiveChanges.xml --target-org <your-sandbox-alias>
 
 # Now deploy as object-scoped
-sf project deploy start --source-dir force-app/main/default/objects/Case/quickActions/MyAction.quickAction-meta.xml --target-org sandbox
+sf project deploy start --source-dir force-app/main/default/objects/Case/quickActions/MyAction.quickAction-meta.xml --target-org <your-sandbox-alias>
 ```
 
 ## Common Pitfalls
@@ -135,6 +135,15 @@ sf project deploy start --source-dir force-app/main/default/objects/Case/quickAc
 | `<flowDefinition>` wrong | Use Flow API Name, not label. Check: `force-app/main/default/flows/` for filename |
 
 ## Validation
+
+### Automated Check
+```bash
+# Validate quick action has <targetObject> element
+bash skills/salesforce-quick-actions/validate-quick-action.sh \
+  force-app/main/default/objects/Case/quickActions/MyAction.quickAction-meta.xml
+```
+
+### Manual Verification
 1. Deploy succeeds without errors
 2. Navigate to record page → action appears in action bar
 3. Click action → flow/form launches correctly

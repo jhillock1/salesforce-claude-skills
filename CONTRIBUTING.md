@@ -36,7 +36,7 @@ Structure your SKILL.md:
 ---
 name: salesforce-your-skill
 description: Brief one-line description
-allowed-tools: [Bash, Read, Write, Edit]
+allowed-tools: [Bash, Read, Write, Edit, mcp__Salesforce_DX__*]
 ---
 
 # Your Skill Name
@@ -54,8 +54,48 @@ Step-by-step patterns with examples
 Mistakes and how to fix them
 
 ## Validation
-How to verify it worked
+How to verify it worked (include validation script if applicable)
 ```
+
+**Adding a validation script:**
+
+If your skill catches a common mistake, add a bash script:
+
+```bash
+# Create script with the skill or in scripts/ for cross-cutting checks
+touch skills/salesforce-your-skill/validate-your-thing.sh
+chmod +x skills/salesforce-your-skill/validate-your-thing.sh
+```
+
+**Good validation script structure:**
+```bash
+#!/bin/bash
+# Brief description of what it validates
+
+# Usage check
+if [ $# -eq 0 ]; then
+    echo "Usage: $0 <arguments>"
+    exit 1
+fi
+
+# Validate input exists
+if [ ! -f "$1" ]; then
+    echo "❌ ERROR: File not found: $1"
+    exit 1
+fi
+
+# Run check
+if [check passes]; then
+    echo "✅ VALID: What's correct"
+    exit 0
+else
+    echo "❌ INVALID: What's wrong"
+    echo "Fix: How to fix it"
+    exit 1
+fi
+```
+
+Reference the script in your SKILL.md's Validation section.
 
 **Updating an existing skill:**
 - Add patterns you've learned from real sessions

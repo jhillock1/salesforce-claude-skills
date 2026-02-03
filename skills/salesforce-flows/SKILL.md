@@ -192,12 +192,12 @@ This is the #1 cause of cryptic deploy errors. Salesforce Flow XML requires elem
 ### Modify an Existing Flow
 1. **Retrieve it first:**
    ```bash
-   sf project retrieve start --metadata "Flow:Case_Prompt_Waiting_On_Customer" --target-org sandbox
+   sf project retrieve start --metadata "Flow:Case_Prompt_Waiting_On_Customer" --target-org <your-sandbox-alias>
    ```
 2. **Edit the XML** — maintain element ordering (all variables together, all screens together, etc.)
 3. **Deploy:**
    ```bash
-   sf project deploy start --source-dir force-app/main/default/flows/Case_Prompt_Waiting_On_Customer.flow-meta.xml --target-org sandbox
+   sf project deploy start --source-dir force-app/main/default/flows/Case_Prompt_Waiting_On_Customer.flow-meta.xml --target-org <your-sandbox-alias>
    ```
 
 ### Add a Decision Element to an Existing Flow
@@ -208,10 +208,10 @@ When a flow references a Queue or Record Type by ID, you MUST resolve the actual
 
 ```bash
 # Find a Queue ID
-sf data query --query "SELECT Id, DeveloperName FROM Group WHERE Type = 'Queue' AND DeveloperName = 'Incident_Managers'" --target-org sandbox
+sf data query --query "SELECT Id, DeveloperName FROM Group WHERE Type = 'Queue' AND DeveloperName = 'Incident_Managers'" --target-org <your-sandbox-alias>
 
 # Find a Record Type ID
-sf data query --query "SELECT Id, DeveloperName FROM RecordType WHERE SObjectType = 'Case'" --target-org sandbox
+sf data query --query "SELECT Id, DeveloperName FROM RecordType WHERE SObjectType = 'Case'" --target-org <your-sandbox-alias>
 ```
 
 ⚠️ **NEVER deploy with placeholder IDs** like `REPLACE_WITH_ACTUAL_QUEUE_ID`. The deploy will succeed but the flow will be broken at runtime.
@@ -230,4 +230,4 @@ sf data query --query "SELECT Id, DeveloperName FROM RecordType WHERE SObjectTyp
 1. Deploy succeeds
 2. For screen flows: Launch from quick action, verify UI renders
 3. For record-triggered: Update a record matching trigger criteria, verify field changes
-4. Run Apex tests if test class exists: `sf apex run test --class-names MyFlowTest --target-org sandbox`
+4. Run Apex tests if test class exists: `sf apex run test --class-names MyFlowTest --target-org <your-sandbox-alias>`
