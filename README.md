@@ -16,6 +16,7 @@ Built from 170+ real Claude Code sessions and countless "why did that fail?!" mo
 
 | Skill | Purpose | Validation Script |
 |-------|---------|-------------------|
+| **salesforce-install** ⭐ | **Run this first!** Auto-configure skills for your org | - |
 | **salesforce-patterns** | LWC, SOQL, Apex best practices and validation rules | `check-soql-security.sh` |
 | **salesforce-quick-actions** | Create flow-based and field update quick actions | `validate-quick-action.sh` ✓ |
 | **salesforce-flows** | Build screen flows, autolaunched flows, and record-triggered flows | `validate-flow-xml.sh` |
@@ -71,11 +72,31 @@ bash scripts/validate-flow-xml.sh force-app/main/default/flows/My_Flow.flow-meta
 
 ## Installation
 
-See [INSTALL.md](INSTALL.md) for setup instructions.
+**Quick Start:**
+```bash
+# Clone to Claude's global skills directory
+git clone https://github.com/jhillock/salesforce-claude-skills.git ~/.claude/skills/salesforce
+
+# Start Claude Code in your Salesforce project
+cd ~/your-salesforce-project
+claude-code
+
+# Run the install skill to auto-configure for your org
+"Use the salesforce-install skill to configure these skills for my org"
+```
+
+Claude will discover your org aliases, RecordTypes, and custom objects, then auto-populate the customization sections.
+
+**See [INSTALL.md](INSTALL.md) for detailed setup instructions.**
 
 ## Usage
 
-Once installed, Claude Code will automatically reference these skills when:
+**First time setup:**
+```
+Use the salesforce-install skill to configure these skills for my org
+```
+
+**After installation,** Claude Code will automatically reference these skills when:
 - Creating quick actions → loads `salesforce-quick-actions`
 - Writing SOQL queries → loads `salesforce-patterns`
 - Deploying metadata → loads `salesforce-deploy`
@@ -88,24 +109,20 @@ for the Case object that launches the "Propose Solution" screen flow.
 
 ## Customization
 
-**These skills are templates - customize them for your org.**
+**The install skill handles most customization automatically.** It will:
+- Discover your org aliases and update all skills
+- Query RecordTypes and populate them in `salesforce-patterns`
+- List custom objects for you to document
 
-Look for **🔧 CUSTOMIZE** markers in skill files:
+**Additional manual customizations:**
 
-1. **Org aliases:** Replace `<your-sandbox-alias>` with your actual org names (see `sf org list`)
-2. **RecordTypes:** Update `salesforce-patterns/SKILL.md` with your org's RecordTypes
-3. **Custom objects:** Document your custom objects and their purpose
-4. **Integration points:** List external systems connected to Salesforce
-5. **Project structure:** Add paths to your `.claude/GOALS.md`, `LEARNINGS.md`, etc. (or remove if not using)
+1. **Custom object descriptions:** Add business purpose for each custom object in `salesforce-patterns/SKILL.md`
+2. **Integration points:** Document external systems connected to Salesforce
+3. **Project structure:** Add paths to your `.claude/GOALS.md`, `LEARNINGS.md`, etc. (if using)
 
-**Recommended first customizations:**
-```bash
-# 1. Set your org aliases
-sed -i '' 's/<your-sandbox-alias>/YOUR_SANDBOX_NAME/g' skills/*/SKILL.md
-sed -i '' 's/<your-prod-alias>/YOUR_PROD_NAME/g' skills/*/SKILL.md
-
-# 2. Add your RecordTypes to salesforce-patterns
-vim skills/salesforce-patterns/SKILL.md  # Search for "RecordTypes in Use"
+**To re-configure after org changes:**
+```
+Use the salesforce-install skill to reconfigure for my org
 ```
 
 ## Contributing
@@ -118,4 +135,4 @@ MIT License - see [LICENSE](LICENSE)
 
 ## Author
 
-Built by [jhillock1](https://github.com/jhillock1) after 170+ Claude Code sessions and way too many "why is this quick action global?!" moments.
+Built by [jhillock](https://github.com/jhillock) after 170+ Claude Code sessions and way too many "why is this quick action global?!" moments.

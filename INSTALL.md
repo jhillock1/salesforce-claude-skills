@@ -4,13 +4,40 @@
 
 - [Claude Code](https://github.com/anthropics/claude-code) installed
 - Salesforce CLI (`sf`) installed
+- **Salesforce MCP** configured (strongly recommended)
 - Git
+
+**⚠️ Important:** While these skills can be read without the Salesforce MCP, they're designed to work WITH it. The MCP provides the tools; these skills teach Claude to use them correctly. Without MCP, you're just reading documentation.
+
+## Quick Start (Recommended)
+
+**After cloning, run the install skill to auto-configure for your org:**
+
+```bash
+# Clone to global skills directory
+git clone https://github.com/jhillock/salesforce-claude-skills.git ~/.claude/skills/salesforce
+
+# Start Claude Code in your Salesforce project
+cd ~/your-salesforce-project
+claude-code
+
+# In Claude Code, run:
+"Use the salesforce-install skill to configure these skills for my org"
+```
+
+Claude will:
+- Verify prerequisites (sf CLI, MCP connection)
+- Discover your org aliases, RecordTypes, and custom objects
+- Auto-populate customization sections
+- Show you the changes for approval
+
+---
 
 ## Option 1: Clone into Global Skills Directory
 
 ```bash
 # Clone to Claude's global skills directory
-git clone https://github.com/jhillock1/salesforce-claude-skills.git ~/.claude/skills/salesforce
+git clone https://github.com/jhillock/salesforce-claude-skills.git ~/.claude/skills/salesforce
 
 # Claude will auto-discover skills in this directory
 ```
@@ -20,14 +47,14 @@ git clone https://github.com/jhillock1/salesforce-claude-skills.git ~/.claude/sk
 ```bash
 # Clone into your Salesforce project
 cd ~/your-salesforce-project
-git clone https://github.com/jhillock1/salesforce-claude-skills.git .claude/skills/salesforce
+git clone https://github.com/jhillock/salesforce-claude-skills.git .claude/skills/salesforce
 ```
 
 ## Option 3: Symlink (Recommended for Multiple Projects)
 
 ```bash
 # Clone once
-git clone https://github.com/jhillock1/salesforce-claude-skills.git ~/salesforce-claude-skills
+git clone https://github.com/jhillock/salesforce-claude-skills.git ~/salesforce-claude-skills
 
 # Symlink in each project
 cd ~/project-1
