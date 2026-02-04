@@ -6,16 +6,22 @@ allowed-tools: [Bash, Read, mcp__Salesforce_DX__*]
 
 # Production Deployment Safety
 
-> **Example from a production org with 20 admins and frequent concurrent changes**
+> **Hard-won lessons from deploying to a 20-admin org where "just deploy it" went wrong**
 
 ## When to Use
 - Before ANY production deployment
-- When promoting validated sandbox work to production
-- When John says "deploy to prod", "promote to prod", or "go live"
+- When you're about to click deploy and that voice in your head says "should I check something first?"
+- When you've been burned before and built a checklist to prevent it happening again
 
 ## STOP — Before You Do Anything
 
-**Never deploy to production without completing ALL pre-flight checks.** No exceptions. Run them in order. If any check fails, stop and resolve before continuing.
+**These checks exist because I learned them the hard way.**
+
+First deployment: "How hard can it be? Just click deploy."  
+Second deployment: "Wait, why did everyone's Case page break?"  
+Third deployment: "Oh. There's a checklist for this."
+
+**Run every check. Every time.** The one time you skip it is the one time you'll need it.
 
 ---
 
@@ -23,7 +29,11 @@ allowed-tools: [Bash, Read, mcp__Salesforce_DX__*]
 
 ### 1. Drift Detection — Are we overwriting someone else's work?
 
-20 admins touch this org. Retrieve the prod versions of every file you're about to deploy and diff against your branch.
+**How I learned this:** Deployed a Flow update. Got a Slack DM 10 minutes later: "Did you just break the escalation workflow?" Turns out, another admin had updated that Flow in prod 2 days ago. I overwrote their changes. No warning. No merge conflict. Just... gone.
+
+**Now I check every time:**
+
+20 admins touch this org. If you don't check, you WILL overwrite someone's work eventually.
 
 ```bash
 # Retrieve prod state of modified files

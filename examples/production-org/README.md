@@ -1,24 +1,27 @@
 # Production Org Examples
 
-**Real-world customizations from a 20-admin production org.**
+**From someone who got thrown into "you're the Salesforce person now" and had to figure it out.**
 
-These examples show how the generic skills look after configuration for an actual enterprise Salesforce org with:
-- 2 Service Cloud business units
-- Sales Cloud for renewals and new business
-- Multiple sandbox environments (dev, UAT, staging)
-- Third-party integrations (meeting notes, analytics)
-- ~50 custom objects
-- RecordTypes across Case, Opportunity, Account
+These aren't polished enterprise best practices. They're patterns I learned by breaking things in a 20-admin org where:
+- Nobody told me about RecordTypes until I deployed a global quick action that didn't work
+- I learned about drift detection after overwriting an admin's Flow changes
+- Testing in production seemed fine until it wasn't
+- "Just deploy it" turned into "why is everyone's page broken?"
+
+These examples show what the skills look like after you've made the mistakes and built the guardrails.
 
 ## What's Different from Generic Skills
 
-**Generic skills** (in `/skills`) have placeholders:
-- `<your-sandbox-alias>` → replaced with actual org names
-- `RecordTypes in Use` → populated with discovered RecordTypes
-- `Custom Objects` → listed with business context
-- Integration points → documented
+**Generic skills** tell you what to do. **These examples** show what you learn after doing it wrong.
 
-**These examples** show what those sections look like after the `salesforce-install` skill runs.
+You'll see:
+- RecordTypes I didn't know existed (and what happened when I ignored them)
+- The drift detection workflow I built after overwriting prod changes
+- Custom objects that aren't in any documentation (because someone built them 3 years ago)
+- Integration patterns reverse-engineered from "why is this webhook failing?"
+- Wave deployment that evolved from "just deploy everything" to "please god never again"
+
+**Use these** to see what patterns emerge when you're learning Salesforce through Claude + trial & error.
 
 ## Using These Examples
 

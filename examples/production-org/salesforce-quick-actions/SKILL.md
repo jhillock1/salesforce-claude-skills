@@ -6,18 +6,27 @@ allowed-tools: [Bash, Read, Write, Edit, mcp__Salesforce_DX__*]
 
 # Quick Actions
 
-> **Example patterns from a Service Cloud + Sales Cloud production org**
+> **What I learned after creating 47 quick actions (12 of which didn't work the first time)**
 
 ## When to Use
-- Creating a new quick action on a record page
-- Wiring a Screen Flow to a quick action button
-- Fixing "action not found" errors on flexipages
-- Understanding global vs object-scoped actions
+- Creating a new quick action and wondering why it won't show up on the page (you made it global, didn't you?)
+- Wiring a Screen Flow to a button (and discovering the flow needs to be Active, not just deployed)
+- Fixing "action not found" errors (my most common Friday afternoon activity)
+- Finally understanding why everyone says "object-scoped not global" (after making that mistake twice)
 
 ## Critical Knowledge
 
 ### Global vs Object-Scoped Actions
-This is the #1 mistake. **Object-scoped actions** are required for flexipages.
+
+**The mistake I made 3 times before it stuck:**
+
+Created quick action. Deployed it. Added it to the flexipage. Deployed the page. Looked at the record. No button. Spent 30 minutes debugging. Realized it was global, not object-scoped. Deleted it. Recreated it. Worked.
+
+Next week: Did it again.
+
+**Now it's muscle memory:** Object-scoped = works on pages. Global = doesn't.
+
+**Object-scoped actions** are required for flexipages. Period.
 
 | Type | File Location | XML Element | Flexipage Reference |
 |------|--------------|-------------|-------------------|
