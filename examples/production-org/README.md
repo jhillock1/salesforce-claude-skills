@@ -1,27 +1,27 @@
 # Production Org Examples
 
-**From someone who got thrown into "you're the Salesforce person now" and had to figure it out.**
+**What these skills look like when applied to a real org.**
 
-These aren't polished enterprise best practices. They're patterns I learned by breaking things in a 20-admin org where:
-- Nobody told me about RecordTypes until I deployed a global quick action that didn't work
-- I learned about drift detection after overwriting an admin's Flow changes
-- Testing in production seemed fine until it wasn't
-- "Just deploy it" turned into "why is everyone's page broken?"
+These examples show patterns you'll develop once you start using the skills in a multi-admin production environment. The scenarios are representative of what happens when:
+- You deploy without checking for drift and overwrite someone else's work
+- You create quick actions that don't appear because they're scoped wrong
+- Integrations break at 3am and you have no audit trail
+- "Just deploy it" turns into incident response
 
-These examples show what the skills look like after you've made the mistakes and built the guardrails.
+Use these to see what the skills help you avoid and what patterns emerge after you've learned the hard way.
 
 ## What's Different from Generic Skills
 
-**Generic skills** tell you what to do. **These examples** show what you learn after doing it wrong.
+**Generic skills** provide templates. **These examples** show what they look like when customized for an actual org.
 
 You'll see:
-- RecordTypes I didn't know existed (and what happened when I ignored them)
-- The drift detection workflow I built after overwriting prod changes
-- Custom objects that aren't in any documentation (because someone built them 3 years ago)
-- Integration patterns reverse-engineered from "why is this webhook failing?"
-- Wave deployment that evolved from "just deploy everything" to "please god never again"
+- RecordTypes documented with context about why they matter (not just "here's a list")
+- Custom objects with notes about how you discovered them (undocumented, found when errors happened)
+- Integration patterns that include failure modes ("this breaks when...")
+- Deployment workflows evolved from mistakes ("drift detection exists because...")
+- Real-world complexity: 20 admins, multiple business units, production data
 
-**Use these** to see what patterns emerge when you're learning Salesforce through Claude + trial & error.
+**Use these** as a reference for what your skills will look like after you've used them for a while.
 
 ## Using These Examples
 

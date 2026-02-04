@@ -6,27 +6,30 @@ allowed-tools: [Bash, Read, Write, Edit, mcp__Salesforce_DX__*]
 
 # Quick Actions
 
-> **What I learned after creating 47 quick actions (12 of which didn't work the first time)**
+> **Example: Common quick action patterns and mistakes**
 
 ## When to Use
-- Creating a new quick action and wondering why it won't show up on the page (you made it global, didn't you?)
-- Wiring a Screen Flow to a button (and discovering the flow needs to be Active, not just deployed)
-- Fixing "action not found" errors (my most common Friday afternoon activity)
-- Finally understanding why everyone says "object-scoped not global" (after making that mistake twice)
+- Creating a new quick action that needs to appear on a record page
+- Wiring a Screen Flow to a button
+- Fixing "action not found" errors on flexipage deployments
+- Understanding why quick actions won't appear (scoping issues)
 
 ## Critical Knowledge
 
 ### Global vs Object-Scoped Actions
 
-**The mistake I made 3 times before it stuck:**
+**Common mistake pattern:**
 
-Created quick action. Deployed it. Added it to the flexipage. Deployed the page. Looked at the record. No button. Spent 30 minutes debugging. Realized it was global, not object-scoped. Deleted it. Recreated it. Worked.
+1. Create quick action, deploy it
+2. Add action to flexipage, deploy page
+3. Open record → no button appears
+4. Spend 30 minutes debugging
+5. Realize: action is global (file location doesn't matter, XML `<targetObject>` missing)
+6. Delete, recreate as object-scoped, works
 
-Next week: Did it again.
+**Why this happens:** File location alone doesn't determine scope. The XML must include `<targetObject>`.
 
-**Now it's muscle memory:** Object-scoped = works on pages. Global = doesn't.
-
-**Object-scoped actions** are required for flexipages. Period.
+**The rule:** For flexipages, actions MUST be object-scoped. Global actions don't appear on record pages.
 
 | Type | File Location | XML Element | Flexipage Reference |
 |------|--------------|-------------|-------------------|

@@ -188,13 +188,13 @@ Use this during brainstorming/planning:
 
 ## Org-Specific Context
 
-> **What I discovered after 6 months of "wait, why didn't that work?"**
+> **Example: What you'll discover as you use these skills**
 
 ### RecordTypes in Use
 
-**Took me way too long to learn:** RecordTypes aren't just cosmetic. If you don't filter by them in SOQL, you get weird data. If you create global quick actions instead of object-scoped, they don't show up on pages. If you ignore them in validation rules, things break in ways that make no sense.
+**Why this matters:** RecordTypes aren't just cosmetic. If you don't filter by them in SOQL, you get unexpected data. If you create global quick actions instead of object-scoped, they won't appear on pages. If you ignore them in validation rules, things break in non-obvious ways.
 
-**Here's what we actually have:**
+**Example from a production org:**
 
 - **Case:** Service_Case, Support_Case, Escalation_Case
 - **Opportunity:** New_Business, Renewal, Upsell
@@ -203,47 +203,54 @@ Use this during brainstorming/planning:
 
 ### Custom Objects
 
-**The ones I had to reverse-engineer because they weren't documented anywhere:**
+**Example: What you'll find in a production org (and how you typically discover them):**
 
-- **Meeting_Note__c** - Someone integrated a meeting tool 2 years ago. Webhook creates these. I only found out when it broke.
-- **Escalation__c** - Built by a contractor who's long gone. Has SLA tracking that nobody understands but everyone depends on.
-- **Integration_Log__c** - I built this after spending 3 hours debugging webhook failures with no audit trail.
-- **Product_Config__c** - Used in quoting. Learned about it when a Flow reference threw an error.
-- **Service_Metric__c** - CSAT/NPS scores. Updated by a scheduled job. Found it while hunting for "where does this number come from?"
-- **Partner_Activity__c** - Business development built it. I maintain it. Classic.
-- **Implementation_Task__c** - Onboarding checklist. Works great until someone adds a task and breaks the automation.
-- **Usage_Data__c** - Analytics platform syncs here daily. Failure = 47 Slack messages asking why dashboards are stale.
+- **Meeting_Note__c** - Webhook integration creates these. You'll discover it when the integration breaks or when building a report.
+- **Escalation__c** - Built by someone no longer at the company. Has SLA tracking. You'll find it when flows reference it or users ask about it.
+- **Integration_Log__c** - Audit trail for webhooks/APIs. Often built after debugging integration failures with no visibility.
+- **Product_Config__c** - Complex product configuration data. You'll encounter it when flows or pricing logic references it.
+- **Service_Metric__c** - CSAT/NPS scores synced from surveys. You'll find it when building dashboards or investigating data sources.
+- **Partner_Activity__c** - Partner engagement tracking. You'll discover it when asked to report on partner relationships.
+- **Implementation_Task__c** - Onboarding checklist automation. You'll learn about it when someone says "new customer onboarding is broken."
+- **Usage_Data__c** - Product usage metrics from external system. You'll find it when the sync fails and dashboards go stale.
 
-> **Real talk:** Your org has objects like this too. No documentation. Critical to someone's workflow. You'll find them when Claude throws an error or someone asks "why isn't this working?"
+> **Common pattern:** Custom objects often lack documentation. You discover them through:
+> - Error messages (flow/validation rule references)
+> - User questions ("where does this data come from?")
+> - Integration failures (webhooks creating records)
+> - Reporting requests ("can you show me X?")
 >
-> **Document them as you discover them.** Future you will thank past you.
+> **Document them as you find them.** Include how they're populated, what uses them, and who owns them.
 
 ### Integration Points
 
-**Things that break at 3am and wake someone up:**
+**Example: Typical integration patterns and what to watch for**
 
 - **Meeting Intelligence Platform** → Salesforce (webhook)
   - Creates Meeting_Note__c records when meetings end
-  - Supposed to link to Opportunities automatically (sometimes doesn't, haven't figured out why)
-  - Updates engagement scores (which feed into renewal predictions, so when it breaks, Sales gets nervous)
-  - **Lesson learned:** Always log incoming webhooks. You'll need the data when debugging.
+  - Links to Opportunities/Contacts (when mapping works correctly)
+  - Updates engagement scores (which may feed into other automation)
+  - **Watch for:** Webhook failures, authentication expiry, field mapping errors
+  - **Best practice:** Log all incoming webhooks for debugging
 
-- **Analytics Platform** → Salesforce (daily sync)
-  - Syncs Usage_Data__c every morning at 6am
-  - If sync fails, renewal workflows don't trigger, dashboards go stale, everyone panics
-  - **Lesson learned:** Build monitoring. Don't find out from users that data is 3 days old.
+- **Analytics Platform** → Salesforce (scheduled sync)
+  - Syncs Usage_Data__c on a schedule (daily/hourly)
+  - Feeds dashboards, triggers workflows based on thresholds
+  - **Watch for:** Sync failures causing stale data, API rate limits, schema changes
+  - **Best practice:** Build monitoring/alerts. Users shouldn't discover stale data before you do.
 
-- **Support Ticketing System** ↔ Salesforce (bidirectional nightmare)
-  - Creates Cases from tickets (works 95% of the time)
-  - Syncs status updates (the other 5% creates duplicate cases)
-  - Escalation routing depends on both systems agreeing on priority (they don't always)
-  - **Lesson learned:** Bidirectional sync = eventual consistency = "why is this case showing two different statuses?"
+- **Support Ticketing System** ↔ Salesforce (bidirectional sync)
+  - Creates Cases from external tickets
+  - Syncs status updates between systems
+  - **Watch for:** Duplicate record creation, status conflicts, field mapping drift
+  - **Common issue:** Bidirectional sync = eventual consistency. Systems may temporarily disagree on state.
+  - **Best practice:** Idempotent webhooks, unique external IDs, clear conflict resolution rules
 
 - **Customer Portal** → Salesforce (Experience Cloud)
-  - Self-service case creation (users love it when it works, hate it when it's down)
-  - Knowledge base integration (search is... not great)
-  - Usage dashboard (pulls from that Usage_Data__c that breaks every few weeks)
-  - **Lesson learned:** Portal downtime = support ticket flood. Have a "portal is down" auto-response ready.
+  - Self-service case creation, knowledge base search, dashboards
+  - **Watch for:** Portal authentication issues, slow search performance, broken dashboard widgets
+  - **Common issue:** Portal downtime = support ticket flood
+  - **Best practice:** Status page, fallback workflows, "portal is down" messaging
 
 ## Project References
 

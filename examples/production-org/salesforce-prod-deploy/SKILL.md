@@ -6,22 +6,25 @@ allowed-tools: [Bash, Read, mcp__Salesforce_DX__*]
 
 # Production Deployment Safety
 
-> **Hard-won lessons from deploying to a 20-admin org where "just deploy it" went wrong**
+> **Example: Deployment patterns for multi-admin production orgs**
 
 ## When to Use
 - Before ANY production deployment
-- When you're about to click deploy and that voice in your head says "should I check something first?"
-- When you've been burned before and built a checklist to prevent it happening again
+- When promoting validated sandbox work to production
+- When multiple admins are making concurrent changes
+- When you need deployment safety in a complex org
 
 ## STOP — Before You Do Anything
 
-**These checks exist because I learned them the hard way.**
+**Why these checks matter:**
 
-First deployment: "How hard can it be? Just click deploy."  
-Second deployment: "Wait, why did everyone's Case page break?"  
-Third deployment: "Oh. There's a checklist for this."
+In orgs with multiple admins making concurrent changes, skipping pre-deployment checks leads to:
+- Overwriting someone else's production changes (no warning, no merge conflict)
+- Deploy failures because dependencies don't exist yet
+- Broken pages/workflows discovered by users, not you
+- Difficult rollbacks because you don't have the previous state
 
-**Run every check. Every time.** The one time you skip it is the one time you'll need it.
+**The pattern:** Run every check, every time. Skipping steps to save 5 minutes costs hours in incident response.
 
 ---
 
@@ -29,11 +32,13 @@ Third deployment: "Oh. There's a checklist for this."
 
 ### 1. Drift Detection — Are we overwriting someone else's work?
 
-**How I learned this:** Deployed a Flow update. Got a Slack DM 10 minutes later: "Did you just break the escalation workflow?" Turns out, another admin had updated that Flow in prod 2 days ago. I overwrote their changes. No warning. No merge conflict. Just... gone.
+**The scenario:** You update a Flow in your branch. Meanwhile, another admin updates the same Flow directly in production. You deploy your changes → their work is gone. No warning. No merge conflict. Just overwritten.
 
-**Now I check every time:**
+**Why this happens:** Salesforce metadata deploys are full-replace, not merge. Your local version becomes the production version.
 
-20 admins touch this org. If you don't check, you WILL overwrite someone's work eventually.
+**The check:**
+
+In multi-admin orgs (20+ people with modify access), production drift is common. Always retrieve current production state before deploying.
 
 ```bash
 # Retrieve prod state of modified files
