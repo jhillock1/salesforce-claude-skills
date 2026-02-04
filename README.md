@@ -41,6 +41,15 @@ Built from 170+ real Claude Code sessions in a production org. Not by a consulta
 
 See `scripts/README.md` for details.
 
+### Real-World Examples (`examples/production-org/`)
+
+**Anonymized but realistic examples** from a 20-admin production org:
+- `salesforce-patterns` - With actual RecordTypes, custom objects, integration patterns
+- `salesforce-prod-deploy` - Wave deployment pattern, drift detection workflow
+- `salesforce-quick-actions` - Flow-based, field update, and LWC action examples
+
+See `examples/production-org/README.md` for how to use these as reference or starting point.
+
 ## Why These Skills Exist
 
 **The Salesforce MCP provides tools but not guardrails.** Claude Code can deploy metadata but often:
