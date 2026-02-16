@@ -24,14 +24,19 @@ Built from 170+ real Claude Code sessions in a production org. Not by a consulta
 | **salesforce-install** ⭐ | **Run this first!** Auto-configure skills for your org | - |
 | **salesforce-patterns** | LWC, SOQL, Apex best practices and validation rules | `check-soql-security.sh` |
 | **salesforce-quick-actions** | Create flow-based and field update quick actions | `validate-quick-action.sh` ✓ |
-| **salesforce-flows** | Build screen flows, autolaunched flows, and record-triggered flows | `validate-flow-xml.sh` |
+| **salesforce-flows** | Flow development patterns, side-effect awareness, competing flows | `validate-flow-xml.sh` |
 | **salesforce-lightning-pages** | Wire components and actions to lightning pages | - |
 | **salesforce-deploy** | Deployment patterns using `sf` CLI | - |
-| **salesforce-prod-deploy** | Production deployment safety and validation | - |
+| **salesforce-prod-deploy** | Production deployment safety, wave deploys, and validation | - |
 | **salesforce-metadata-enrichment** | Query and enrich metadata from your org | - |
 | **salesforce-list-views** | Create and manage list views | - |
 | **salesforce-test-validation** | Test class patterns and validation | - |
 | **salesforce-connect** | Connect to Salesforce orgs (sandbox/production) | - |
+| **salesforce-uat-tdd** | UAT-driven development — acceptance criteria first, then build | - |
+| **salesforce-sites-guest-user** | Sites guest user pages, DML restrictions, Visualforce patterns | - |
+| **branch-isolation** | Enforce strict branch isolation — one branch = one feature | - |
+| **skill-developer** | Meta-skill for creating and managing Claude Code skills | - |
+| **ooxml** | Pack/unpack Office documents for XML-level editing | - |
 
 ### Validation Scripts (`scripts/`)
 
@@ -86,14 +91,27 @@ bash scripts/validate-flow-xml.sh force-app/main/default/flows/My_Flow.flow-meta
 
 ## Installation
 
-**Quick Start:**
+### As a Claude Code Plugin (Recommended)
+
 ```bash
-# Clone to Claude's global skills directory
-git clone https://github.com/jhillock/salesforce-claude-skills.git ~/.claude/skills/salesforce
+# Clone the repo
+git clone https://github.com/jhillock1/salesforce-claude-skills.git ~/salesforce-claude-skills
+
+# Install as a local plugin
+claude plugin install ~/salesforce-claude-skills --local
+```
+
+Skills will be available as `salesforce-skills:<skill-name>` (e.g., `/salesforce-skills:salesforce-deploy`). They load regardless of which git branch you're on.
+
+### Manual Installation
+
+```bash
+# Clone to a skills directory
+git clone https://github.com/jhillock1/salesforce-claude-skills.git ~/.claude/skills/salesforce
 
 # Start Claude Code in your Salesforce project
 cd ~/your-salesforce-project
-claude-code
+claude
 
 # Run the install skill to auto-configure for your org
 "Use the salesforce-install skill to configure these skills for my org"
@@ -156,13 +174,13 @@ After 170+ Claude Code sessions (and way too many "why did that deploy fail?!" m
 If you're in the same boat - using AI to bridge the knowledge gap in Salesforce - these skills are for you.
 
 **Connect:**
-- GitHub: [@jhillock](https://github.com/jhillock)
+- GitHub: [@jhillock](https://github.com/jhillock1)
 - LinkedIn: [John Hillock](https://www.linkedin.com/in/jchillock) - Let's connect if you're building AI tools for Salesforce or navigating the "accidental admin" path
 
 ---
 
 ## Questions or Issues?
 
-- **Bug reports:** [Open an issue](https://github.com/jhillock/salesforce-claude-skills/issues)
-- **Usage questions:** [GitHub Discussions](https://github.com/jhillock/salesforce-claude-skills/discussions)
+- **Bug reports:** [Open an issue](https://github.com/jhillock1/salesforce-claude-skills/issues)
+- **Usage questions:** [GitHub Discussions](https://github.com/jhillock1/salesforce-claude-skills/discussions)
 - **Just want to connect:** Find me on [LinkedIn](https://www.linkedin.com/in/jchillock)
