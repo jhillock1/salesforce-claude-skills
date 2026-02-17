@@ -1,0 +1,27 @@
+{
+  "name": "salesforce-skills-local",
+  "owner": {
+    "name": "John Hillock"
+  },
+  "metadata": {
+    "description": "Salesforce development skills for Claude Code",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "salesforce-skills",
+      "source": "./",
+      "description": "Salesforce development skills: flows, deploys, testing, metadata enrichment, and org patterns",
+      "version": "1.0.0",
+      "author": {
+        "name": "John Hillock"
+      },
+      "homepage": "https://github.com/jhillock1/salesforce-claude-skills",
+      "repository": "https://github.com/jhillock1/salesforce-claude-skills",
+      "license": "MIT",
+      "keywords": ["salesforce", "skills", "flows", "apex", "deployment", "tdd"],
+      "category": "development",
+      "skills": "./skills/"
+    }
+  ]
+}
