@@ -32,54 +32,89 @@ Before touching any metadata, create `docs/test_plans/<feature>-uat.xlsx` using 
 
 ### Workbook Structure (MANDATORY — use this exact format every time)
 
-The xlsx file MUST have these 6 sheets with these exact column headers:
+Use the **xlsx skill** to create the workbook. The file MUST have these 7 sheets.
+
+### Global Styling
+
+- **Header rows:** Dark blue fill (`#003366`), white bold text, size 12
+- **Section header rows:** Light blue fill (`#D6E4F0`), bold, size 11 — span full row width
+- **Title cells** (Summary sheet, Test Cases title): Bold, size 14-16, dark blue text (`#003366`), no fill
+- **Freeze panes:** Row 1 frozen on all data sheets (header stays visible when scrolling)
+- **Column widths:** Set explicitly (don't leave at default 8.43) — description/check columns wide (50-65), ID columns narrow (8), status columns medium (10-14)
 
 #### Sheet 1: "Summary"
+
 | Row | Column A | Column B |
 |-----|----------|----------|
-| 1 | `[Feature Name]: UAT Checklist` | *(merged across columns)* |
+| 1 | `[Feature Name]: UAT Checklist` | *(title, bold 16pt, dark blue text)* |
 | 3 | `Created:` | `YYYY-MM-DD` |
 | 4 | `Branch:` | `plan/feature-name` |
 | 5 | `Environment:` | `Sandbox (casechek--partial)` |
 | 6 | `Tester:` | `John Hillock + Claude Code` |
 | 7 | `Test Class:` | `<Feature>FlowTest.cls` |
 | 8 | `Pass Criteria:` | `sf apex run test --class-names <Feature>FlowTest` |
+| 9 | `Design Doc:` | `docs/plans/...` (link to relevant design doc) |
+
+Column A labels: bold, size 10. Column B values: regular, size 10.
 
 #### Sheet 2: "Tier 1 - Apex Validated"
-Column headers (row 1): `#` | `Section` | `Check` | `Apex Test Method` | `Pass?`
 
-- Section header rows: Column A only (e.g., `1.1 Infrastructure`)
+Headers (row 1): `#` | `Section` | `Check` | `Apex Test Method` | `Pass?`
+Widths: 8 | 22 | 65 | 38 | 10
+
+- Section header rows: Column A only, light blue fill (e.g., `1.1 Infrastructure — Object Name`)
 - Data rows: `AV-1`, `AV-2`, etc. in Column A
-- Pass? values: blank (untested), `PASS`, `FAIL`
-- Group items by section with section header rows between groups
+- **Data validation on Pass? column:** List = `PASS,FAIL`
+- Freeze panes: `A2`
 
 #### Sheet 3: "Tier 2 - Manual UAT"
-Column headers (row 1): `#` | `Case #` | `Section` | `Test / Step` | `Expected Result` | `Pass?` | `Tester` | `Date` | `Notes`
 
-- Section header rows: Column A only (e.g., `2.1 UI & Layout`)
+Headers (row 1): `#` | `Case #` | `Section` | `Test / Step` | `Expected Result` | `Pass?` | `Tester` | `Date` | `Notes` | `Follow-up`
+Widths: 8 | 12 | 20 | 50 | 55 | 10 | 14 | 12 | 30 | 30
+
+- Section header rows: Column A only, light blue fill (e.g., `2.1 UI & Layout`)
 - Data rows: `MU-1`, `MU-2`, etc. in Column A
-- Case # is filled in during Phase 3.5 (test case seeding)
+- Case # filled during Phase 3.5 (test case seeding)
+- **Data validation on Pass? column:** List = `PASS,FAIL,BLOCKED,DEFERRED`
+- Freeze panes: `A2`
 
 #### Sheet 4: "Issues"
-Column headers (row 1): `#` | `Issue` | `Severity` | `Related UAT Item` | `Resolution` | `Status` | `Date Found` | `Date Resolved`
 
-- Severity: `Critical`, `High`, `Medium`, `Low`
-- Status: `Open`, `Fixed`, `Won't Fix`
+Headers (row 1): `#` | `Issue` | `Severity` | `Related UAT Item` | `Resolution` | `Status` | `Date Found` | `Date Resolved`
+Widths: 5 | 50 | 12 | 16 | 40 | 12 | 14 | 14
+
+- **Data validation on Severity:** List = `Critical,High,Medium,Low`
+- **Data validation on Status:** List = `Open,Fixed,Deferred`
+- Pre-populate 20 empty numbered rows
 
 #### Sheet 5: "Test Cases"
-Row 1: `Test Cases Created for Manual UAT` (title)
-Column headers (row 3): `Case #` | `Subject` | `Status` | `Account` | `MU Items`
 
-- Filled in during Phase 3.5
+Row 1: `Test Cases Created for Manual UAT` (title, bold 14pt, dark blue text)
+Headers (row 3): `Case #` | `Subject` | `Status` | `Account` | `MU Items`
+Widths: 12 | 55 | 20 | 30 | 16
+
+- **Zebra striping:** Alternate rows with light gray fill (`#F2F2F2`)
+- Filled during Phase 3.5
 
 #### Sheet 6: "Re-Test"
-Column headers (row 1): `#` | `Case #` | `Section` | `Test / Step` | `Expected Result` | `Prior Result` | `Re-Test?` | `Fix Applied` | `Tester` | `Date` | `Notes`
 
-- Items move here from Tier 1/Tier 2 when they fail and need re-testing after a fix
+Headers (row 1): `#` | `Case #` | `Section` | `Test / Step` | `Expected Result` | `Prior Result` | `Re-Test?` | `Fix Applied` | `Tester` | `Date` | `Notes`
+Widths: 8 | 12 | 20 | 50 | 55 | 12 | 10 | 50 | 14 | 12 | 55
+
+- Items move here from Tier 1/Tier 2 after failing and getting a fix
+- Section header rows group re-test items by context (light blue fill)
+- Freeze panes: `A2`
+
+#### Sheet 7: "Known Limitations"
+
+Headers (row 1): `#` | `Limitation` | `Reason` | `Workaround` | `Related UAT Item` | `Accepted By` | `Date`
+Widths: 5 | 50 | 40 | 40 | 16 | 14 | 12
+
+- Edge cases or behaviors that won't be fixed — documented and accepted
 
 ### Reference
 
-The canonical example is `docs/test_plans/service-cloud-phase1-metrics-uat.xlsx`. When in doubt, match that file's structure.
+The canonical example is `docs/test_plans/service-cloud-phase1-metrics-uat.xlsx`. When in doubt, match that file's structure and styling.
 
 ### Pass Criteria
 
