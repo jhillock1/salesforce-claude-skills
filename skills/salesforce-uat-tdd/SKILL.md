@@ -28,70 +28,64 @@ allowed-tools: [Bash, Read, Write, Edit, Glob, Grep, mcp__Salesforce_DX__*]
 
 ## Phase 1: Write the UAT Checklist
 
-Before touching any metadata, create `docs/test_plans/<feature>-uat.xlsx`.
+Before touching any metadata, create `docs/test_plans/<feature>-uat.xlsx` using the **xlsx skill**.
 
-### Structure
+### Workbook Structure (MANDATORY — use this exact format every time)
 
-Follow the proven pattern from Phase 0 (`service-cloud-phase0-master-uat.md`), but split into two tiers:
+The xlsx file MUST have these 6 sheets with these exact column headers:
 
-```markdown
-# [Feature Name]: UAT Checklist
+#### Sheet 1: "Summary"
+| Row | Column A | Column B |
+|-----|----------|----------|
+| 1 | `[Feature Name]: UAT Checklist` | *(merged across columns)* |
+| 3 | `Created:` | `YYYY-MM-DD` |
+| 4 | `Branch:` | `plan/feature-name` |
+| 5 | `Environment:` | `Sandbox (casechek--partial)` |
+| 6 | `Tester:` | `John Hillock + Claude Code` |
+| 7 | `Test Class:` | `<Feature>FlowTest.cls` |
+| 8 | `Pass Criteria:` | `sf apex run test --class-names <Feature>FlowTest` |
 
-> **Branch:** `plan/feature-name`
-> **Environment:** Sandbox (casechek--partial)
-> **Tester:** John Hillock + Claude Code
+#### Sheet 2: "Tier 1 - Apex Validated"
+Column headers (row 1): `#` | `Section` | `Check` | `Apex Test Method` | `Pass?`
 
----
+- Section header rows: Column A only (e.g., `1.1 Infrastructure`)
+- Data rows: `AV-1`, `AV-2`, etc. in Column A
+- Pass? values: blank (untested), `PASS`, `FAIL`
+- Group items by section with section header rows between groups
 
-## Tier 1: Apex-Validated (automated — no manual re-testing needed)
+#### Sheet 3: "Tier 2 - Manual UAT"
+Column headers (row 1): `#` | `Case #` | `Section` | `Test / Step` | `Expected Result` | `Pass?` | `Tester` | `Date` | `Notes`
 
-> These items are covered by `FeatureFlowTest.cls`. When all tests pass,
-> mark the entire tier as passed. Do NOT manually re-verify these.
+- Section header rows: Column A only (e.g., `2.1 UI & Layout`)
+- Data rows: `MU-1`, `MU-2`, etc. in Column A
+- Case # is filled in during Phase 3.5 (test case seeding)
 
-### Infrastructure
-| # | Check | Apex Test | Pass? |
-|---|-------|-----------|-------|
-| AV-1 | `New_Field__c` picklist exists with 5 values | testFieldAcceptsAllValues | [ ] |
-| AV-2 | `Formula__c` returns TRUE when Status = In Progress | testFormulaTrueWhenOpen | [ ] |
+#### Sheet 4: "Issues"
+Column headers (row 1): `#` | `Issue` | `Severity` | `Related UAT Item` | `Resolution` | `Status` | `Date Found` | `Date Resolved`
 
-### Flow Behavior
-| # | Check | Apex Test | Pass? |
-|---|-------|-----------|-------|
-| AV-3 | Inbound email clears Waiting_On__c | testInboundEmailClearsWaitingOn | [ ] |
-| AV-4 | Flow does NOT override Status on email | testEmailFlowDoesNotOverrideStatus | [ ] |
+- Severity: `Critical`, `High`, `Medium`, `Low`
+- Status: `Open`, `Fixed`, `Won't Fix`
 
-### Data Outcomes
-| # | Check | Apex Test | Pass? |
-|---|-------|-----------|-------|
-| AV-5 | Migration: old status maps to new Waiting_On value | testMigrationOutcome | [ ] |
+#### Sheet 5: "Test Cases"
+Row 1: `Test Cases Created for Manual UAT` (title)
+Column headers (row 3): `Case #` | `Subject` | `Status` | `Account` | `MU Items`
 
-**Pass criteria:** `sf apex run test --class-names FeatureFlowTest` → all green.
-When tests pass, mark every AV item as [x] in one batch.
+- Filled in during Phase 3.5
 
----
+#### Sheet 6: "Re-Test"
+Column headers (row 1): `#` | `Case #` | `Section` | `Test / Step` | `Expected Result` | `Prior Result` | `Re-Test?` | `Fix Applied` | `Tester` | `Date` | `Notes`
 
-## Tier 2: Manual UAT (human walkthrough — things Apex can't test)
+- Items move here from Tier 1/Tier 2 when they fail and need re-testing after a fix
 
-> These items require a human in the UI. They test layout, UX, and
-> workflow coherence that Apex has no visibility into.
+### Reference
 
-### UI & Layout
-| # | Case # | Test | Expected | Pass? |
-|---|--------|------|----------|-------|
-| MU-1 | 00001234 | New field visible on record page | Field appears under "Case Information" | [ ] |
-| MU-2 | 00001234 | Quick action appears in action bar | "Escalate Case" button visible | [ ] |
+The canonical example is `docs/test_plans/service-cloud-phase1-metrics-uat.xlsx`. When in doubt, match that file's structure.
 
-### End-to-End Workflow
-| # | Case # | Step | Expected | Pass? |
-|---|--------|------|----------|-------|
-| MU-3 | (create new) | Agent opens queue, accepts case | Owner = agent | [ ] |
-| MU-4 | 00001235 | Agent sends email reply | Toast shown, Waiting_On = Customer | [ ] |
+### Pass Criteria
 
-### Edge Cases (manual-only)
-| # | Case # | Test | Expected | Pass? |
-|---|--------|------|----------|-------|
-| MU-5 | 00001236 | Slack notification renders correctly | mrkdwn formatting | [ ] |
-```
+**Tier 1:** `sf apex run test --class-names <Feature>FlowTest` → all green. When tests pass, batch-mark every linked AV item as `PASS`.
+
+**Tier 2:** Human walkthrough — John marks each MU item during the manual UAT session.
 
 ### Key Principle: Apex First, Manual Only When Necessary
 
