@@ -36,18 +36,70 @@ sf project deploy start \
   --target-org <your-sandbox-alias>
 ```
 
-### Deploy Order Matters
-Some metadata depends on other metadata existing first:
+### `--ignore-errors` Does NOT Prevent Rollback
+```
+CRITICAL: The `--ignore-errors` flag on `sf project deploy start` is misleading.
+Under the hood, Salesforce still uses `rollbackOnError: true`.
+
+This means:
+- If ANY component in the deploy fails, ALL components are rolled back — even successful ones
+- The deploy output may show "18 successes" but they're ALL reverted if there's 1 failure
+- You CANNOT rely on partial deploys through this flag
+
+Instead: Deploy in small waves. If Wave 2 fails, Wave 1 is already committed and safe.
+```
+
+### Deploy Order with Verification
+
+Some metadata depends on other metadata. Deploy in this order, verifying between each wave:
 
 ```
-1. Custom Fields / Objects (dependencies for everything)
-2. Flows (referenced by quick actions)  
-3. Quick Actions (referenced by flexipages)
-4. Flexipages / Page Layouts (reference actions + fields)
-5. Permission Sets / Profiles (reference all of the above)
+Wave 1: Global Value Sets + Standard Value Sets (picklist dependencies)
+Wave 2: Custom Objects (deploy entire objects directory, includes fields)
+Wave 3: VERIFY — Run schema check to confirm all fields exist (see salesforce-schema-verification skill)
+Wave 4: Visualforce Pages (needed by some Apex controllers)
+Wave 5: Apex Classes (depend on objects + VF pages)
+Wave 6: LWCs (depend on Apex)
+Wave 7: Flows (depend on Apex + objects)
+Wave 8: Quick Actions (depend on Flows)
+Wave 9: Flexipages / Page Layouts (reference everything above)
+Wave 10: Permission Sets / Profiles (reference all of the above)
+Wave 11: Reports/Dashboards (deploy report folders first, then report content)
+
+IMPORTANT: Bulk deploys can SILENTLY SKIP fields. If you deploy the entire force-app directory,
+it may report 702/703 success but silently not create ~30 custom fields.
+After deploying objects, ALWAYS verify fields exist before proceeding to Apex/Flows.
 ```
 
-Deploy in this order. If you deploy a flexipage that references a quick action that doesn't exist yet, it fails.
+### Schema Cache Corruption on Hyperforce Sandboxes
+
+If custom objects/fields deploy "successfully" but are invisible to Schema.getGlobalDescribe() or SOQL:
+
+```
+SYMPTOMS:
+- Deploy reports success (or "Unchanged")
+- Tooling API shows the objects/fields exist
+- But Apex runtime can't see them (SOQL fails, Schema.getGlobalDescribe() doesn't include them)
+- Dynamic SOQL also fails
+
+DO NOT WASTE TIME ON:
+- Re-deploying with different flags (--ignore-conflicts, --force-overwrite)
+- Converting to mdapi format and re-deploying
+- Deleting and recreating objects
+- Checking FLS/permissions (it's not a permissions issue)
+- Source tracking resets
+
+WORKAROUND:
+- Enable/disable a platform feature (e.g., Einstein/Agentforce) to force a schema cache refresh
+- This has been observed to clear the corruption
+
+IF WORKAROUND FAILS:
+- File a Salesforce support case with:
+  - Org ID
+  - Affected object/field API names
+  - Evidence from Tooling API showing objects exist
+  - Evidence from Schema.getGlobalDescribe() showing they're invisible
+```
 
 ### Validate Before Deploy (Optional but Recommended)
 ```bash

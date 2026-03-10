@@ -100,6 +100,53 @@ Fields on flexipages are in `<componentInstanceProperties>` within field section
 3. Paste into the target section's `<itemInstances>` list
 4. Field order = display order
 
+### Remove a Component from a Tab (Full Facet Chain Cleanup)
+
+Removing a component from a flexipage is NOT as simple as deleting its `<itemInstances>` block. Flexipages use nested facet chains, and leaving orphaned facets breaks the XML silently.
+
+**Step 1: Map the full facet chain BEFORE making any edits**
+
+Search the flexipage for the component you want to remove. Note its containing facet ID. Then trace upward:
+
+```
+Component (e.g., quickActionListItem for "Escalate_to_Jira")
+  └── contained in Facet-abf7c7ae (the immediate wrapper)
+       └── referenced by fieldSection16 (a tab or section)
+            └── contained in Facet-3307d075 (section wrapper)
+                 └── referenced by column28 (a column)
+                      └── contained in Facet-e850b2e3 (column wrapper)
+```
+
+**Step 2: Identify ALL elements to remove**
+
+You must remove:
+1. The `<itemInstances>` block containing your component
+2. The tab/section `<itemInstances>` that references the component's facet
+3. ALL intermediate facet `<flexiPageRegions>` blocks in the chain
+4. Any `<facets>` references pointing to removed facets
+
+**Step 3: Remove from bottom up**
+
+Start with the innermost element (the component itself) and work outward:
+1. Remove the component's itemInstance
+2. Remove the facet region that contained only that component (if it's now empty)
+3. Remove the section/tab item that referenced the now-empty facet
+4. Continue up the chain, removing any facet regions that are now empty
+
+**Step 4: Verify XML integrity**
+
+After all edits:
+- Every `<facets>` reference should point to an existing `<flexiPageRegions>` name
+- No orphaned facet regions (facets not referenced by anything)
+- Tab counts and column counts still make sense
+
+**Step 5: Deploy and verify**
+```bash
+sf project deploy start --source-dir force-app/main/default/flexipages/YourPage.flexipage-meta.xml --target-org <your-org-alias>
+```
+
+If deploy fails with XML errors, you likely left an orphaned facet or removed a facet still referenced elsewhere.
+
 ## Common Pitfalls
 
 | Pitfall | Fix |
@@ -108,6 +155,8 @@ Fields on flexipages are in `<componentInstanceProperties>` within field section
 | Flexipage not in repo | Must retrieve from org first: `sf project retrieve start --metadata FlexiPage` |
 | Related list actions vs highlights panel actions | They're different XML sections — search for `highlights` for the main action bar |
 | Deploy fails with unrelated errors | Use targeted deploy: `--source-dir` pointing only to the flexipage file |
+| Removing component leaves orphaned facets | Trace FULL facet chain before editing — remove all facets in the chain |
+| Tab removed but section/column facets remain | Map parent→child facet relationships first, remove bottom-up |
 
 ## Validation After Deploy
 1. Open a record in sandbox
