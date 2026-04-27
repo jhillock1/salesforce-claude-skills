@@ -158,6 +158,43 @@ If deploy fails with XML errors, you likely left an orphaned facet or removed a 
 | Removing component leaves orphaned facets | Trace FULL facet chain before editing — remove all facets in the chain |
 | Tab removed but section/column facets remain | Map parent→child facet relationships first, remove bottom-up |
 
+## Gotchas
+
+### Publisher Surfaces: Lightning vs Classic (HIGH-RISK)
+
+**Editing `<quickActionList>` on a Lightning org is a no-op.** Casechek is 100% Lightning. This has burned multiple sessions — always verify the surface before editing.
+
+| Surface | XML location | Visible in Lightning? |
+|---|---|---|
+| **Lightning Feed publisher tabs** (Post/Email/Task inside Feed) | Page Layout `<platformActionList>` | **YES — edit this** |
+| **Lightning top action bar** (Accept/Edit/Close buttons) | Flexipage `force:highlightsPanel` → `actionNames` (or falls back to layout `<platformActionList>`) | YES |
+| Salesforce Classic publisher | Page Layout `<quickActionList>` | **NO — invisible** |
+| Global Publisher (Home/Chatter tab) | Global Layout `<quickActionList>` | Only in non-record contexts |
+
+**Hard rules:**
+1. `<quickActionList>` only accepts feed-item-producing actions. Deploying a Flow action there fails with: `You can't add QuickActionType Flow to a QuickActionList`. **That error means you're on the wrong surface.**
+2. To remove items from the Lightning Feed publisher, delete `<platformActionListItems>` blocks from the **page layout** (not flexipage).
+3. To change the top action bar buttons, edit the **flexipage** `highlightsPanel` `actionNames`. If unset, layout `<platformActionList>` provides the fallback.
+
+**Diagnosis recipe — "I deployed but Lightning UI didn't change":** It is almost never browser cache. Before recommending hard-refresh/incognito, query the live layout via Tooling API and confirm `platformActionList` matches what you deployed:
+```bash
+# Get layout Id
+sf data query --query "SELECT Id, Name FROM Layout WHERE TableEnumOrId='Case'" --target-org <alias> --tooling-api --json
+
+# Inspect both lists
+curl -s -H "Authorization: Bearer $TOKEN" \
+  "$INSTANCE/services/data/v64.0/tooling/sobjects/Layout/<layoutId>/" | \
+  jq '.Metadata | {quickActionList, platformActionList}'
+```
+9 times out of 10 the deploy hit the wrong element.
+
+### Pre-Edit Checklist (Avoid the 4-Rev Cycle)
+
+Before editing any layout/flexipage to change publisher actions:
+1. **Identify the surface** — feed tabs (`platformActionList`), top action bar (flexipage highlights), or Classic (`quickActionList`)?
+2. **Confirm the user is in Lightning** — Casechek is. So `quickActionList` edits are almost always wrong.
+3. **Read the live metadata first** via Tooling API (above) — don't trust the file in the repo if you haven't pulled recently.
+
 ## Validation After Deploy
 1. Open a record in sandbox
 2. Verify the action appears in the highlights panel (top action bar)

@@ -338,3 +338,62 @@ sf data query --query "SELECT Status, Waiting_On__c, COUNT(Id) FROM Case WHERE I
 - **Flow versions:** Deploying a flow creates a new version. Old version is still there. If you need to rollback, activate the previous version in Setup → Flows.
 - **Field-level security:** New fields may not be visible to all profiles. Check FLS after deploying fields.
 - **List view visibility:** New list views default to "visible to me only." Set sharing to appropriate groups.
+
+---
+
+## Gotchas (Hard-Won)
+
+### `./scripts/deploy.sh production` Baseline Tag Drift (HIGH-RISK)
+
+The wrapper computes its diff base from the last `deploy-production-*` tag. If that tag is stale, your deploy can sweep in **~200 unrelated drifted files** alongside your actual change. This is how a worktree branch deploy escaped scope and overwrote unrelated UI in prod (Guide tab + publisher actions, 2026-04-22).
+
+**Before running `./scripts/deploy.sh production`:**
+```bash
+# Inspect what the script will deploy — compare deploy-production-* tag to HEAD
+git tag -l 'deploy-production-*' | sort -r | head -3
+git diff --stat $(git tag -l 'deploy-production-*' | sort -r | head -1)..HEAD | tail -1
+```
+
+If the diff shows files outside your change scope, **DO NOT use the wrapper**. Use a targeted `sf project deploy start --source-dir <specific-paths>` instead, listing only the files you intended to ship.
+
+**Targeted cherry-pick deploy:**
+```bash
+sf project deploy start \
+  --source-dir force-app/main/default/flows/My_Flow.flow-meta.xml \
+  --source-dir force-app/main/default/quickActions/Case.My_Action.quickAction-meta.xml \
+  --target-org production
+```
+
+### Worktree Branch → Prod = Blast Radius
+
+Deploying from a feature branch (worktree) to prod will sweep in ANY metadata changed on that branch since it diverged. Even with the wrapper's drift check:
+
+1. **Always run `git status` and `git diff develop --stat` from the worktree** before invoking deploy.sh.
+2. **Show the deploy plan to the user via TaskCreate FIRST** — list every file in the deploy scope. Wait for confirmation before dispatching the deploy agent.
+3. **Prefer cherry-pick to develop, then deploy from develop** over deploying directly from the feature branch.
+
+### PSG Composition: Sandbox vs Prod Drift
+
+PermissionSetGroup deploys often fail in sandbox with errors like:
+```
+Cannot create permission set group ... invalid: CopilotSalesforceUser, EinsteinARForConversations
+```
+
+Prod has Einstein/Copilot license-gated permission sets that don't exist in sandbox. PSG XML lists them as components. Two patterns:
+
+1. **Strip license-gated components from sandbox-targeted deploys** — keep them in source for prod.
+2. **Use sandbox-specific PSG variants** (e.g., `MyPSG_Sandbox.permissionsetgroup-meta.xml`) and exclude prod-only PSGs from sandbox deploy scope.
+
+Always describe the live PSG before editing:
+```bash
+sf data query --query "SELECT MasterLabel, DeveloperName FROM PermissionSetGroupComponent WHERE PermissionSetGroupId IN (SELECT Id FROM PermissionSetGroup WHERE DeveloperName='YourPSG')" --target-org sandbox --tooling-api --json
+```
+
+### Show The Plan Before Dispatching The Deploy Agent
+
+For prod deploys (and worktree-branch deploys to any environment), do this in order:
+1. **TaskCreate** the deploy steps (cherry-pick, validate, deploy, post-verify).
+2. **Show the user the full file list** that will be in scope.
+3. **Wait for confirmation** before invoking the deploy subagent.
+
+The user has explicitly asked for this visibility — autonomous prod deploys without showing the plan is a documented anti-pattern in this repo.

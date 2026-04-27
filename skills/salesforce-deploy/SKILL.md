@@ -161,6 +161,14 @@ sf org list metadata --metadata-type FlexiPage --target-org <your-sandbox-alias>
 sf project retrieve start --metadata "QuickAction:Case.My_Action" --target-org <your-sandbox-alias>
 ```
 
+## Gotchas
+
+1. **Stop after 3 consecutive deploy failures.** If you've deployed, fixed, and redeployed 3 times and it's still failing, STOP. The problem is likely not a simple fix — it's a wrong deploy order, a missing dependency, or a fundamental design issue. Reassess your approach before retrying.
+
+2. **Never pipe `sf` CLI output directly to python or jq.** The CLI sometimes prepends warning text (e.g., deprecation notices, auth warnings) that breaks JSON parsing. Use `--json` flag and capture to a temp file first, or strip non-JSON lines before parsing.
+
+3. **Verify fields exist after deploying objects.** Bulk deploys can silently skip ~30 custom fields while reporting 702/703 success. Always run a schema check between Wave 2 (objects) and Wave 5 (Apex).
+
 ## Common Pitfalls
 
 | Pitfall | Fix |
@@ -170,6 +178,7 @@ sf project retrieve start --metadata "QuickAction:Case.My_Action" --target-org <
 | Deploying stale local copy | Always `sf project retrieve start` before modifying existing metadata |
 | Deploy succeeds but feature missing | Check flow activation status — deployed ≠ activated |
 | Timeout on large deploys | Break into smaller targeted deploys |
+| Deploy-fix-retry loop (3+ times) | STOP. Reassess approach — wrong order, missing dep, or design issue |
 
 ## Validation After Deploy
 ```bash

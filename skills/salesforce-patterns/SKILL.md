@@ -98,6 +98,14 @@ Id serviceRT = Schema.SObjectType.Case.getRecordTypeInfosByDeveloperName()
 - Use selective filters to reduce query size
 - Consider pagination for large datasets
 
+### SOQL Gotchas
+
+1. **Not all sObjects are queryable.** `WorkflowAlert`, `ObjectTerritory2Association`, and many setup objects cannot be queried via standard SOQL. Use the Tooling API (`/services/data/vXX.0/tooling/query`) for metadata objects instead.
+
+2. **Verify field names before using them.** Don't guess field API names — they vary by org. Run `DESCRIBE` or query `FieldDefinition` first if unsure. Common mistakes: `DefaultLeadOwnerId` (doesn't exist on Organization), `FolderId` (doesn't exist on Report), `Error_Message__c` vs the actual field name.
+
+3. **Parallel SOQL calls cascade on failure.** If you fire multiple SOQL queries in parallel and one fails, all sibling calls get cancelled. Run critical queries sequentially or handle cancellation gracefully.
+
 ## Apex Best Practices
 
 ### Trigger Patterns
@@ -250,3 +258,50 @@ SAFETY-RULES.md     - Deployment safety rules
 - Develop in sandbox (write access)
 - Test with bulk data (governor limits)
 - Validate security at every layer
+
+---
+
+## SOQL Gotchas
+
+### Polymorphic Lookups (Owner, WhoId, WhatId, ParentId)
+
+`Owner` on Case (and Lead, Account, Contract, etc.) is polymorphic — it can be a User OR a Queue. **`Owner.Name` does NOT work.** Use the typed dot syntax:
+
+```sql
+-- ❌ FAILS: INVALID_FIELD: No such column 'Owner.Name'
+SELECT Id, Owner.Name FROM Case
+
+-- ✅ WORKS: typed access
+SELECT Id, Owner.Type, Owner:User.Name, Owner:Group.Name FROM Case
+
+-- ✅ Or use TYPEOF for branched fields
+SELECT Id,
+  TYPEOF Owner
+    WHEN User THEN Name, Email
+    WHEN Group THEN Name
+  END
+FROM Case
+```
+
+Common polymorphic fields: `Case.Owner`, `Lead.Owner`, `Account.Owner`, `Task.WhoId`, `Task.WhatId`, `EmailMessage.RelatedToId`.
+
+### Preflight `sf sobject describe` Before Querying Unfamiliar Objects
+
+For system/setup objects (EnhancedLetterhead, LayoutLight, PermissionSetGroup, FlowDefinition, etc.) **describe first — don't guess fields**. Multiple INVALID_FIELD trial-and-error cycles per session is wasted time.
+
+```bash
+# Cheap describe — lists all queryable fields with types
+sf sobject describe --sobject EnhancedLetterhead --target-org sandbox --json | jq '.fields[] | {name, type, queryable: .filterable}' | head -50
+
+# For tooling-only objects (Layout, Flow, etc.), use --use-tooling-api
+sf sobject describe --sobject LayoutLight --target-org sandbox --use-tooling-api --json | jq '.fields[].name'
+```
+
+**Known field-name traps:**
+| Object | Wrong | Right |
+|---|---|---|
+| EnhancedLetterhead | `DeveloperName`, `IsActive` | `Name` (no DeveloperName field) |
+| LayoutLight | `TableEnumOrId` | use `Layout` (full sobject) instead |
+| Layout | (queryable) | Tooling API only — needs `--use-tooling-api` |
+| Case | `Owner.Name` | `Owner:User.Name` (polymorphic) |
+| Incident (Casechek) | `Jira_Link__c` (sandbox-only) | `Jira_Ticket_Link__c` (prod) — verify per-org |

@@ -53,6 +53,21 @@ This is the #1 cause of cryptic deploy errors. Flow XML requires elements of the
 
 "Element X is duplicated" error = same element type in two non-contiguous locations. Group them.
 
+### Pre-Deploy Validation (Mandatory After Any Flow Edit)
+
+Before running deploy on a flow you authored or modified, run this self-check to catch ordering violations:
+
+```bash
+# List element types in order of appearance — duplicates must be ADJACENT, not interleaved
+grep -oE '<(variables|formulas|screens|decisions|recordLookups|recordUpdates|recordCreates|recordDeletes|assignments|actionCalls|loops|subflows|start)>' \
+  force-app/main/default/flows/<YourFlow>.flow-meta.xml \
+  | nl
+```
+
+If any element type appears non-contiguously (e.g., `<screens>` at line 50 and again at line 200 with other types in between), **fix the ordering before deploying** — do not retry the deploy and hope. This pattern has caused multiple wasted deploy cycles.
+
+**Element groups:** the deploy parser also requires `<actionCalls>`, `<loops>`, `<subflows>`, `<recordDeletes>` to be contiguous within their type.
+
 ### Flow Types
 | Type | `<processType>` | Trigger | Use Case |
 |------|-----------------|---------|----------|
