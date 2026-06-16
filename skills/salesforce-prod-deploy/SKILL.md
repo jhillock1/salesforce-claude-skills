@@ -17,6 +17,32 @@ allowed-tools: [Bash, Read, mcp__Salesforce_DX__*]
 
 ---
 
+## Production Deploy Gate — Approval + Manifest Scope
+
+Every production deploy must satisfy two non-negotiable controls. These are enforced at the repo level (in casechek-salesforce via a hook + wrapper script) and are the **recommended pattern** for any org using this skill. Adapt the paths to your repo — don't assume casechek's layout maps onto a different org.
+
+### 1. Approval-Gated — a human owner must say yes
+
+A production deploy must **stop at a permission prompt that only the org owner can approve.** The deploy cannot proceed autonomously; an agent (or any non-owner) hitting the gate is blocked until the owner explicitly approves.
+
+**Recommended enforcement:** a `PreToolUse` hook that intercepts deploy commands targeting production and requires interactive approval before the underlying `sf project deploy start` runs. In casechek-salesforce this is `.claude/hooks/prod-deploy-gate.sh`. Other orgs should wire an equivalent hook (or CI approval step) — the key property is that *prod deploys are not self-serve*.
+
+### 2. Manifest-Scoped — name exactly what ships
+
+A production deploy must declare an **explicit, bounded set of components** via a checked-in manifest (`package.xml`) or an explicit `--source-dir`. Untargeted deploys and `--all`-style "deploy everything" are **denied** — they are the mechanism by which drifted, unrelated metadata escapes into prod (see the baseline-tag-drift gotcha below).
+
+**Recommended pattern:** keep a per-unit-of-work manifest and pass it explicitly. In casechek-salesforce, manifests live at `manifest/<IODK-key>/package.xml` (keyed to the Jira delivery ticket), and the canonical command is:
+
+```bash
+./scripts/deploy.sh production --manifest manifest/<IODK-key>/package.xml
+```
+
+The wrapper feeds the manifest to `sf project deploy start --manifest …`. A targeted `--source-dir <explicit-paths>` is the equivalent escape hatch for one-off cherry-picks. What's rejected is a deploy with **no explicit scope** — those are blocked by the gate, not merely discouraged.
+
+> Other orgs: substitute your own manifest location and wrapper. The rule that travels is: **prod deploys are approval-gated and explicitly scoped — never untargeted, never `--all`.**
+
+---
+
 ## Sandbox Deploy Validation (Pre-Flight Lite)
 
 Before deploying to **sandbox**, run these quick checks to avoid deploy-debug loops:
